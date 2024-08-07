@@ -23,7 +23,8 @@ Antes de executar a aplicação, é necessário configurar as variáveis de ambi
 
 ```
 PORT=443
-SSL_KEY_PATH=./certs/key.pem
+(caminho para o certificado digital)
+SSL_KEY_PATH=./certs/key.pem 
 SSL_CERT_PATH=./certs/cert.pem
 
 DB_HOST=localhost
