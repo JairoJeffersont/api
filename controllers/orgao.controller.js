@@ -8,19 +8,18 @@ class OrgaoController {
         try {
             const orgao = req.body;
 
-            const requiredFields = ['orgao_nome', 'orgao_email', 'orgao_municipio', 'orgao_estado', 'orgao_tipo', 'orgao_criado_por'];
-            const missingFields = requiredFields.filter(field => !orgao[field]);
-
-            if (missingFields.length > 0) {
-                return res.status(400).json({ status: 400, message: `Campos obrigatórios faltando: ${missingFields.join(', ')}` });
+            if (!orgao.orgao_nome || !orgao.orgao_email || !orgao.orgao_municipio || !orgao.orgao_estado || !orgao.orgao_tipo) {
+                return res.status(400).json({ status: 400, message: 'Todos os campos obrigatórios devem ser preenchidos' });
             }
+
+            orgao.orgao_criado_por = req.user.usuario_id;
 
             await Orgao.create(orgao);
             return res.status(201).json({ status: 201, message: 'Órgão criado com sucesso.' });
 
         } catch (err) {
             if (err.original) {
-                
+
                 if (err.original.errno === 1062) {
                     return res.status(409).json({ status: 409, message: 'Esse órgão já está cadastrado' });
                 }

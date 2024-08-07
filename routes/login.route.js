@@ -27,7 +27,7 @@ router.post('/login', async (req, res) => {
                 process.env.SECRET_KEY,
                 { expiresIn: process.env.TOKEN_TIME }
             );
-            addLog('log_access', `${process.env.MASTER_USER} - ${process.env.MASTER_EMAIL}`)
+            addLog('log_access', `${process.env.MASTER_USER} - ${process.env.MASTER_EMAIL} - token ${token}`)
             return res.status(200).json({ message: 'Login bem-sucedido.', token });
         }
 
@@ -56,7 +56,7 @@ router.post('/login', async (req, res) => {
             process.env.SECRET_KEY,
             { expiresIn: process.env.TOKEN_TIME }
         );
-        addLog('log_access', `${usuario.usuario_nome} - ${usuario.usuario_email}`)
+        addLog('log_access', `${usuario.usuario_nome} - ${usuario.usuario_email} - token ${token}`)
         return res.status(200).json({ message: 'Login bem-sucedido.', token });
 
     } catch (error) {

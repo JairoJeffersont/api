@@ -86,6 +86,7 @@ class UsuarioController {
     }
 
     async list(req, res) {
+        
         try {
             const { pagina = 1, itens = 10, ordem = 'ASC', ordernarPor = 'usuario_nome' } = req.query;
             const offset = (pagina - 1) * itens;
