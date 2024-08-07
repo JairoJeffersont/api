@@ -143,6 +143,9 @@ class UsuarioController {
 
             return res.status(200).json({ status: 200, message: 'Usuário apagado com sucesso' });
         } catch (error) {
+            if (error.original && error.original.errno === 1451) {
+                return res.status(409).json({ status: 409, message: 'Não é possível apagar esse usuário porque ele está referenciado em outras tabelas.' });
+            }
             addLog('error_user', error.message);
             return res.status(500).json({ status: 500, message: 'Erro interno do servidor' });
         }

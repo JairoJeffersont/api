@@ -6,34 +6,31 @@ class OrgaoController {
 
     async create(req, res) {
         try {
-
             const orgao = req.body;
+
+            const requiredFields = ['orgao_nome', 'orgao_email', 'orgao_municipio', 'orgao_estado', 'orgao_tipo', 'orgao_criado_por'];
+            const missingFields = requiredFields.filter(field => !orgao[field]);
+
+            if (missingFields.length > 0) {
+                return res.status(400).json({ status: 400, message: `Campos obrigatórios faltando: ${missingFields.join(', ')}` });
+            }
+
             await Orgao.create(orgao);
             return res.status(201).json({ status: 201, message: 'Órgão criado com sucesso.' });
 
         } catch (err) {
-
-            if (err.original && err.original.errno == 1062) {
-                return res.status(409).json({ status: 409, message: 'Esse órgão já está cadastrado' });
-            }
-
-            if (err.original && err.original.errno == 1452) {
-                return res.status(409).json({ status: 409, message: 'O tipo de órgão ou ID do usuário está incorreto' });
-            }
-
-            console.log(err);
-
-            if (err.errors) {
-                const hasNotNullViolation = err.errors.some(error => error.type === "notNull Violation");
-                if (hasNotNullViolation) {
-                    return res.status(400).json({ status: 400, message: 'Preencha todos os campos obrigatórios' });
+            if (err.original) {
+                if (err.original.errno === 1062) {
+                    return res.status(409).json({ status: 409, message: 'Esse órgão já está cadastrado' });
+                }
+                if (err.original.errno === 1452) {
+                    return res.status(409).json({ status: 409, message: 'O tipo de órgão ou ID do usuário está incorreto' });
                 }
             }
 
-            addLog('error_user', err.message);
+            addLog('error_orgao', err.message);
             return res.status(500).json({ status: 500, message: 'Erro interno do servidor' });
         }
-
     }
 
     async update(req, res) {
@@ -41,7 +38,7 @@ class OrgaoController {
             const { id } = req.params;
 
             const [updated] = await Orgao.update(req.body, {
-                where: { 'orgao_id': id },
+                where: { orgao_id: id },
             });
 
             if (!updated) {
@@ -50,12 +47,11 @@ class OrgaoController {
 
             return res.status(200).json({ status: 200, message: 'Órgão atualizado com sucesso.' });
         } catch (err) {
-
-            if (err.original && err.original.errno == 1452) {
+            if (err.original && err.original.errno === 1452) {
                 return res.status(409).json({ status: 409, message: 'O tipo de órgão ou ID do usuário está incorreto' });
             }
 
-            addLog('error_user', err.message);
+            addLog('error_orgao', err.message);
             return res.status(500).json({ status: 500, message: 'Erro interno do servidor' });
         }
     }
@@ -88,9 +84,8 @@ class OrgaoController {
                 ]
             });
 
-
             if (rows.length === 0) {
-                return res.status(200).json({ status: 204, message: 'Nenhum órgão registrado' });
+                return res.status(404).json({ status: 404, message: 'Nenhum órgão registrado' });
             }
 
             const lastPage = Math.ceil(count / itens);
@@ -101,16 +96,18 @@ class OrgaoController {
                 last: `${req.protocol}://${req.hostname}/api/orgaos?itens=${itens}&pagina=${lastPage}&ordem=${ordem}&ordernarPor=${ordernarPor}`
             }
 
-            return res.status(200).json({ status: 200, message: `${count} órgão(aos) encontrado(os)`, dados: rows, links });
+            return res.status(200).json({ status: 200, message: `${count} órgão(s) encontrado(s)`, dados: rows, links });
         } catch (error) {
-            addLog('error_user', error.message);
-            return res.status(400).json({ status: 500, message: 'Erro interno do servidor' });
+            addLog('error_orgao', error.message);
+            return res.status(500).json({ status: 500, message: 'Erro interno do servidor' });
         }
     }
 
     async find(req, res) {
         try {
-            const usuario = await Orgao.findByPk(req.params.id, {
+            const { id } = req.params;
+
+            const orgao = await Orgao.findByPk(id, {
                 include: [
                     {
                         model: TipoOrgao,
@@ -125,37 +122,41 @@ class OrgaoController {
                 ]
             });
 
-            if (!usuario) {
-                return res.status(200).json({ status: 204, message: 'Órgão não encontrado' });
+            if (!orgao) {
+                return res.status(404).json({ status: 404, message: 'Órgão não encontrado' });
             }
 
-            return res.status(200).json({ status: 200, message: `Órgão encontrado`, dados: usuario });
+            return res.status(200).json({ status: 200, message: 'Órgão encontrado', dados: orgao });
 
         } catch (error) {
-            addLog('error_user', error.message);
-            return res.status(400).json({ status: 500, message: 'Erro interno do servidor' });
+            addLog('error_orgao', error.message);
+            return res.status(500).json({ status: 500, message: 'Erro interno do servidor' });
         }
     }
 
     async delete(req, res) {
         try {
-            const usuario = await Orgao.findByPk(req.params.id);
+            const { id } = req.params;
 
-            if (!usuario) {
-                return res.status(200).json({ status: 200, message: 'Órgão não encontrado' });
+            const orgao = await Orgao.findByPk(id);
+
+            if (!orgao) {
+                return res.status(404).json({ status: 404, message: 'Órgão não encontrado' });
             }
 
-            await usuario.destroy();
+            await orgao.destroy();
 
             return res.status(200).json({ status: 200, message: 'Órgão apagado com sucesso' });
         } catch (error) {
-            addLog('error_user', error.message);
+            if (error.original && error.original.errno === 1451) {
+                return res.status(409).json({ status: 409, message: 'Não é possível apagar o órgão porque ele está referenciado em outras tabelas.' });
+            }
+            addLog('error_orgao', error.message);
             return res.status(500).json({ status: 500, message: 'Erro interno do servidor' });
         }
     }
 
     async syncModel(req, res) {
-
         try {
             await TipoOrgao.sync({ alter: true });
             await TipoOrgao.findOrCreate({
@@ -177,11 +178,11 @@ class OrgaoController {
                     orgao_tipo: 1,
                     orgao_criado_por: 1000
                 }
-            })
+            });
 
             return res.status(200).json({ status: 200, message: 'Modelo sincronizado com sucesso' });
         } catch (error) {
-            addLog('error_organ', error.message);
+            addLog('error_orgao', error.message);
             return res.status(500).json({ status: 500, message: 'Erro interno do servidor' });
         }
     }
