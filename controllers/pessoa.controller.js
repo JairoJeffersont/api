@@ -8,7 +8,7 @@ class PessoaController {
         try {
             const pessoa = req.body;
 
-            if (!pessoa.pessoa_nome || !pessoa.pessoa_email || !pessoa.pessoa_municipio || !pessoa.pessoa_estado || !pessoa.pessoa_estado || !pessoa.pessoa_tipo || !pessoa.pessoa_orgao  || !pessoa.pessoa_criada_por) {
+            if (!pessoa.pessoa_nome || !pessoa.pessoa_email || !pessoa.pessoa_municipio || !pessoa.pessoa_estado || !pessoa.pessoa_estado || !pessoa.pessoa_tipo || !pessoa.pessoa_orgao || !pessoa.pessoa_criada_por) {
                 return res.status(400).json({ status: 400, message: 'Todos os campos obrigatórios devem ser preenchidos' });
             }
 
