@@ -133,26 +133,6 @@ class PessoaController {
         }
     }
 
-    async syncModel(req, res) {
-        try {
-            await TipoPessoa.sync({ alter: true });
-            await TipoPessoa.findOrCreate({
-                where: { tipo_pessoa_id: 1 },
-                defaults: {
-                    tipo_pessoa_nome: 'Sem tipo definido',
-                    tipo_pessoa_descricao: 'Sem um tipo de pessoa definido'
-                }
-            });
-
-            await Pessoa.sync({ alter: true });
-
-            return res.status(200).json({ status: 200, message: 'Modelo sincronizado com sucesso' });
-        } catch (error) {
-            addLog('error_pessoa', error.message);
-            return res.status(500).json({ status: 500, message: 'Erro interno do servidor' });
-        }
-    }
-
     async delete(req, res) {
         try {
             const { id } = req.params;
@@ -171,6 +151,26 @@ class PessoaController {
                 return res.status(409).json({ status: 409, message: 'Não é possível apagar a pessoa porque ela está referenciada em outras tabelas.' });
             }
 
+            addLog('error_pessoa', error.message);
+            return res.status(500).json({ status: 500, message: 'Erro interno do servidor' });
+        }
+    }
+
+    async syncModel(req, res) {
+        try {
+            await TipoPessoa.sync({ alter: true });
+            await TipoPessoa.findOrCreate({
+                where: { tipo_pessoa_id: 1 },
+                defaults: {
+                    tipo_pessoa_nome: 'Sem tipo definido',
+                    tipo_pessoa_descricao: 'Sem um tipo de pessoa definido'
+                }
+            });
+
+            await Pessoa.sync({ alter: true });
+
+            return res.status(200).json({ status: 200, message: 'Modelo sincronizado com sucesso' });
+        } catch (error) {
             addLog('error_pessoa', error.message);
             return res.status(500).json({ status: 500, message: 'Erro interno do servidor' });
         }
