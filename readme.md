@@ -27,7 +27,7 @@ SSL_KEY_PATH=./certs/key.pem
 SSL_CERT_PATH=./certs/cert.pem
 
 DB_HOST=localhost
-DB_NAME=adonis
+DB_NAME=db
 DB_USER=user
 DB_PASS=pass
 DB_PORT=port
