@@ -6,34 +6,27 @@ class PessoaController {
 
     async create(req, res) {
         try {
-
             const pessoa = req.body;
+
+            if (!pessoa.pessoa_nome || !pessoa.pessoa_email || !pessoa.pessoa_municipio || !pessoa.pessoa_estado || !pessoa.pessoa_estado || !pessoa.pessoa_tipo || !pessoa.pessoa_orgao  || !pessoa.pessoa_criada_por) {
+                return res.status(400).json({ status: 400, message: 'Todos os campos obrigatórios devem ser preenchidos' });
+            }
+
             await Pessoa.create(pessoa);
             return res.status(201).json({ status: 201, message: 'Pessoa criada com sucesso.' });
 
         } catch (err) {
-
-            if (err.original && err.original.errno == 1062) {
-                return res.status(409).json({ status: 409, message: 'Essa pessoa já está cadastrado' });
+            if (err.original && err.original.errno === 1062) {
+                return res.status(409).json({ status: 409, message: 'Essa pessoa já está cadastrada' });
             }
 
-            if (err.original && err.original.errno == 1452) {
+            if (err.original && err.original.errno === 1452) {
                 return res.status(409).json({ status: 409, message: 'O tipo de pessoa ou ID do usuário está incorreto' });
             }
 
-            console.log(err);
-
-            if (err.errors) {
-                const hasNotNullViolation = err.errors.some(error => error.type === "notNull Violation");
-                if (hasNotNullViolation) {
-                    return res.status(400).json({ status: 400, message: 'Preencha todos os campos obrigatórios' });
-                }
-            }
-
-            addLog('error_people', err.message);
+            addLog('error_pessoa', err.message);
             return res.status(500).json({ status: 500, message: 'Erro interno do servidor' });
         }
-
     }
 
     async update(req, res) {
@@ -48,14 +41,13 @@ class PessoaController {
                 return res.status(404).json({ status: 404, message: 'Pessoa não encontrada ou nenhum dado atualizado' });
             }
 
-            return res.status(200).json({ status: 200, message: 'Pessoa atualizado com sucesso.' });
+            return res.status(200).json({ status: 200, message: 'Pessoa atualizada com sucesso.' });
         } catch (err) {
-
-            if (err.original && err.original.errno == 1452) {
+            if (err.original && err.original.errno === 1452) {
                 return res.status(409).json({ status: 409, message: 'O tipo de pessoa ou ID do usuário está incorreto' });
             }
 
-            addLog('error_user', err.message);
+            addLog('error_pessoa', err.message);
             return res.status(500).json({ status: 500, message: 'Erro interno do servidor' });
         }
     }
@@ -88,9 +80,8 @@ class PessoaController {
                 ]
             });
 
-
             if (rows.length === 0) {
-                return res.status(200).json({ status: 204, message: 'Nenhuma pessoa registrado' });
+                return res.status(204).json({ status: 204, message: 'Nenhuma pessoa registrada' });
             }
 
             const lastPage = Math.ceil(count / itens);
@@ -101,16 +92,16 @@ class PessoaController {
                 last: `${req.protocol}://${req.hostname}/api/pessoas?itens=${itens}&pagina=${lastPage}&ordem=${ordem}&ordernarPor=${ordernarPor}`
             }
 
-            return res.status(200).json({ status: 200, message: `${count} pessoa(as) encontrada(as)`, dados: rows, links });
+            return res.status(200).json({ status: 200, message: `${count} pessoa(s) encontrada(s)`, dados: rows, links });
         } catch (error) {
-            addLog('error_user', error.message);
-            return res.status(400).json({ status: 500, message: 'Erro interno do servidor' });
+            addLog('error_pessoa', error.message);
+            return res.status(500).json({ status: 500, message: 'Erro interno do servidor' });
         }
     }
 
     async find(req, res) {
         try {
-            const pessoas = await Pessoa.findByPk(req.params.id, {
+            const pessoa = await Pessoa.findByPk(req.params.id, {
                 include: [
                     {
                         model: TipoPessoa,
@@ -130,20 +121,19 @@ class PessoaController {
                 ]
             });
 
-            if (!pessoas) {
-                return res.status(200).json({ status: 204, message: 'Pessoa não encontrada' });
+            if (!pessoa) {
+                return res.status(404).json({ status: 404, message: 'Pessoa não encontrada' });
             }
 
-            return res.status(200).json({ status: 200, message: `Pessoa encontrada`, dados: pessoas });
+            return res.status(200).json({ status: 200, message: 'Pessoa encontrada', dados: pessoa });
 
         } catch (error) {
-            addLog('error_user', error.message);
-            return res.status(400).json({ status: 500, message: 'Erro interno do servidor' });
+            addLog('error_pessoa', error.message);
+            return res.status(500).json({ status: 500, message: 'Erro interno do servidor' });
         }
     }
 
     async syncModel(req, res) {
-
         try {
             await TipoPessoa.sync({ alter: true });
             await TipoPessoa.findOrCreate({
@@ -153,31 +143,38 @@ class PessoaController {
                     tipo_pessoa_descricao: 'Sem um tipo de pessoa definido'
                 }
             });
+
             await Pessoa.sync({ alter: true });
+
             return res.status(200).json({ status: 200, message: 'Modelo sincronizado com sucesso' });
         } catch (error) {
-            addLog('error_people', error.message);
+            addLog('error_pessoa', error.message);
             return res.status(500).json({ status: 500, message: 'Erro interno do servidor' });
         }
     }
 
     async delete(req, res) {
         try {
-            const pessoa = await Pessoa.findByPk(req.params.id);
+            const { id } = req.params;
+
+            const pessoa = await Pessoa.findByPk(id);
 
             if (!pessoa) {
-                return res.status(200).json({ status: 200, message: 'Pessoa não encontrada' });
+                return res.status(404).json({ status: 404, message: 'Pessoa não encontrada' });
             }
 
             await pessoa.destroy();
 
             return res.status(200).json({ status: 200, message: 'Pessoa apagada com sucesso' });
         } catch (error) {
-            addLog('error_user', error.message);
+            if (error.original && error.original.errno === 1451) {
+                return res.status(409).json({ status: 409, message: 'Não é possível apagar a pessoa porque ela está referenciada em outras tabelas.' });
+            }
+
+            addLog('error_pessoa', error.message);
             return res.status(500).json({ status: 500, message: 'Erro interno do servidor' });
         }
     }
-
 }
 
 module.exports = new PessoaController();

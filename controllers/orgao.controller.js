@@ -20,6 +20,7 @@ class OrgaoController {
 
         } catch (err) {
             if (err.original) {
+                
                 if (err.original.errno === 1062) {
                     return res.status(409).json({ status: 409, message: 'Esse órgão já está cadastrado' });
                 }
