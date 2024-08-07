@@ -154,13 +154,14 @@ class UsuarioController {
 
     async syncModel(req, res) {
         try {
+            const hashedPassword = await bcrypt.hash(process.env.MASTER_PASS, 10);
             await Usuario.sync({ alter: true });
             await Usuario.findOrCreate({
                 where: { usuario_id: 1000 },
                 defaults: {
                     usuario_nome: process.env.MASTER_USER,
                     usuario_email: process.env.MASTER_EMAIL,
-                    usuario_senha: bcrypt.hash(process.env.MASTER_PASS, 10),
+                    usuario_senha: hashedPassword,
                     usuario_telefone: 0,
                     usuario_aniversario: '2000-01-01',
                     usuario_ativo: 1,

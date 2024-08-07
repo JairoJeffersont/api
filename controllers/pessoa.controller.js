@@ -1,6 +1,5 @@
 const { Pessoa, TipoPessoa, Usuario, Orgao } = require('../models/pessoa.model');
 const addLog = require('../middleware/logger');
-const { Op } = require('sequelize');
 
 class PessoaController {
 
