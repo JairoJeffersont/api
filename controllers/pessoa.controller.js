@@ -1,5 +1,6 @@
 const { Pessoa, TipoPessoa, Usuario, Orgao } = require('../models/pessoa.model');
 const addLog = require('../middleware/logger');
+const { Op } = require('sequelize'); // Certifique-se de importar Op
 
 class PessoaController {
 
@@ -176,6 +177,68 @@ class PessoaController {
             return res.status(500).json({ status: 500, message: 'Erro interno do servidor' });
         }
     }
+
+    async search(req, res) {
+        try {
+            const { pagina = 1, itens = 10, ordem = 'ASC', ordernarPor = 'pessoa_nome' } = req.query;
+            const offset = (pagina - 1) * itens;
+            const nomeBusca = `%${req.query.nome}%`; 
+    
+            const totalCount = await Pessoa.count({
+                where: {
+                    pessoa_nome: {
+                        [Op.like]: nomeBusca
+                    }
+                }
+            });
+    
+            const rows = await Pessoa.findAll({
+                where: {
+                    pessoa_nome: {
+                        [Op.like]: nomeBusca
+                    }
+                },
+                order: [[ordernarPor, ordem]],
+                limit: Number(itens),
+                offset: Number(offset),
+                include: [
+                    {
+                        model: TipoPessoa,
+                        as: 'TipoPessoa',
+                        attributes: ['tipo_pessoa_id', 'tipo_pessoa_nome']
+                    },
+                    {
+                        model: Orgao,
+                        as: 'Orgao',
+                        attributes: ['orgao_id', 'orgao_nome']
+                    },
+                    {
+                        model: Usuario,
+                        as: 'Usuario',
+                        attributes: ['usuario_id', 'usuario_nome']
+                    }
+                ]
+            });
+    
+            if (rows.length === 0) {
+                return res.status(204).json({ status: 204, message: 'Nenhuma pessoa registrada' });
+            }
+    
+            const lastPage = Math.ceil(totalCount / itens);
+    
+            const links = {
+                first: `${req.protocol}://${req.hostname}/api/pessoas?itens=${itens}&pagina=1&ordem=${ordem}&ordernarPor=${ordernarPor}`,
+                self: `${req.protocol}://${req.hostname}/api/pessoas?itens=${itens}&pagina=${pagina}&ordem=${ordem}&ordernarPor=${ordernarPor}`,
+                last: `${req.protocol}://${req.hostname}/api/pessoas?itens=${itens}&pagina=${lastPage}&ordem=${ordem}&ordernarPor=${ordernarPor}`
+            }
+    
+            return res.status(200).json({ status: 200, message: `${rows.length} pessoa(s) encontrada(s)`, dados: rows, links });
+        } catch (error) {
+            addLog('error_pessoa', error.message);
+            return res.status(500).json({ status: 500, message: 'Erro interno do servidor' });
+        }
+    }
+
 }
 
 module.exports = new PessoaController();

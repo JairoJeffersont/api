@@ -156,6 +156,43 @@ class OrgaoController {
         }
     }
 
+    async search(req, res) {
+        try {
+            const { nome } = req.query;
+            const nomeBusca = `%${nome}%`; 
+    
+            const orgaos = await Orgao.findAll({
+                where: {
+                    orgao_nome: {
+                        [Op.like]: nomeBusca
+                    }
+                },
+                include: [
+                    {
+                        model: TipoOrgao,
+                        as: 'TipoOrgao',
+                        attributes: ['orgao_tipo_id', 'orgao_tipo_nome']
+                    },
+                    {
+                        model: Usuario,
+                        as: 'Usuario',
+                        attributes: ['usuario_id', 'usuario_nome']
+                    }
+                ]
+            });
+    
+            if (orgaos.length === 0) {
+                return res.status(204).json({ status: 204, message: 'Nenhum órgão encontrado' });
+            }
+    
+            return res.status(200).json({ status: 200, message: `${orgaos.length} órgão(s) encontrado(s)`, dados: orgaos });
+    
+        } catch (error) {
+            addLog('error_orgao', error.message);
+            return res.status(500).json({ status: 500, message: 'Erro interno do servidor' });
+        }
+    }
+
     async syncModel(req, res) {
         try {
             await TipoOrgao.sync({ alter: true });

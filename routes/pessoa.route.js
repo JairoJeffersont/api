@@ -7,5 +7,6 @@ router.post('/pessoas', PessoaController.create);
 router.put('/pessoas/:id', PessoaController.update);
 router.get('/pessoas', PessoaController.list);
 router.get('/pessoas/:id', PessoaController.find);
+router.get('/pessoaBusca', PessoaController.search);
 router.delete('/pessoas/:id', PessoaController.delete);
 module.exports = router;

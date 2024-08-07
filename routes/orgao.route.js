@@ -7,6 +7,7 @@ router.get('/orgaos', OrgaoController.list);
 router.post('/orgaos', OrgaoController.create);
 router.put('/orgaos/:id', OrgaoController.update);
 router.get('/orgaos/:id', OrgaoController.find);
+router.get('/orgaosBusca', OrgaoController.search);
 router.delete('/orgaos/:id', OrgaoController.delete);
 
 module.exports = router;
