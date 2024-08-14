@@ -63,7 +63,7 @@ As dependências necessárias para a aplicação são as seguintes:
 ```
 "bcryptjs": "^2.4.3",
 "body-parser": "^1.20.2",
- "dotenv": "^16.4.5",
+"dotenv": "^16.4.5",
 "express": "^4.19.2",
 "fs": "^0.0.1-security",
 "https": "^1.0.0",
