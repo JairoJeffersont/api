@@ -55,3 +55,22 @@ e depois acesse ```/api/sync``` para criar as tabelas do banco
 ## Acessar a Documentação
 
 Você pode acessar a documentação da API em ```/api-docs```
+
+## Dependências Utilizadas
+
+As dependências necessárias para a aplicação são as seguintes:
+
+```
+"dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.2",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "fs": "^0.0.1-security",
+    "https": "^1.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.10.3",
+    "sequelize": "^6.37.3"
+}
+
+```
