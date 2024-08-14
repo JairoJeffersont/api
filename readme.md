@@ -34,8 +34,9 @@ DB_USER=user
 DB_PASS=pass
 DB_PORT=port
 
-
+(chave secreta para token JWT)
 SECRET_KEY=ds9j0sd9jfds90jf9sdjf
+(tempo de duração do token JWT)
 TOKEN_TIME=24H
 
 (usuario root do sistema)
