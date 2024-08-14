@@ -1,6 +1,6 @@
 const { Pessoa, TipoPessoa, Usuario, Orgao } = require('../models/pessoa.model');
 const addLog = require('../middleware/logger');
-const { Op } = require('sequelize'); // Certifique-se de importar Op
+const { Op } = require('sequelize');
 
 class PessoaController {
 
@@ -158,26 +158,6 @@ class PessoaController {
         }
     }
 
-    async syncModel(req, res) {
-        try {
-            await TipoPessoa.sync({ alter: true });
-            await TipoPessoa.findOrCreate({
-                where: { tipo_pessoa_id: 1 },
-                defaults: {
-                    tipo_pessoa_nome: 'Sem tipo definido',
-                    tipo_pessoa_descricao: 'Sem um tipo de pessoa definido'
-                }
-            });
-
-            await Pessoa.sync({ alter: true });
-
-            return res.status(200).json({ status: 200, message: 'Modelo sincronizado com sucesso' });
-        } catch (error) {
-            addLog('error_pessoa', error.message);
-            return res.status(500).json({ status: 500, message: 'Erro interno do servidor' });
-        }
-    }
-
     async search(req, res) {
         try {
             const { pagina = 1, itens = 10, ordem = 'ASC', ordernarPor = 'pessoa_nome' } = req.query;
@@ -236,6 +216,18 @@ class PessoaController {
         } catch (error) {
             addLog('error_pessoa', error.message);
             return res.status(500).json({ status: 500, message: 'Erro interno do servidor' });
+        }
+    }
+
+    async syncModel() {
+        try {
+           
+            await Pessoa.sync({ alter: true });
+
+            return { status: 200, message: 'Modelo sincronizado com sucesso' };
+        } catch (error) {
+            addLog('error_pessoa', error.message);
+            return { status: 500, message: 'Erro interno do servidor' };
         }
     }
 

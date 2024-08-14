@@ -152,9 +152,9 @@ class UsuarioController {
         }
     }
 
-    async syncModel(req, res) {
+    async syncModel() {
         try {
-            const hashedPassword = await bcrypt.hash(process.env.MASTER_PASS, 10);
+            const hashedPassword = bcrypt.hash(process.env.MASTER_PASS, 10);
             await Usuario.sync({ alter: true });
             await Usuario.findOrCreate({
                 where: { usuario_id: 1000 },
@@ -168,12 +168,13 @@ class UsuarioController {
                     usuario_nivel: 1
                 }
             });
-            return res.status(200).json({ status: 200, message: 'Modelo sincronizado com sucesso' });
+            return { status: 200, message: 'Modelo sincronizado com sucesso' };
         } catch (error) {
             addLog('error_user', error.message);
-            return res.status(500).json({ status: 500, message: 'Erro interno do servidor' });
+            return { status: 500, message: 'Erro interno do servidor' };
         }
     }
+    
 }
 
 module.exports = new UsuarioController();

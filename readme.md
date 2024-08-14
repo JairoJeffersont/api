@@ -51,7 +51,7 @@ e depois acesse /api/sync para criar as tabelas do banco
 
 ## Acessar a Documentação
 
-Depois de configurar as variáveis de ambiente, você pode acessar a documentação da API navegando para:
+Você pode acessar a documentação da API navegando para:
 
 ```
 /api-docs

@@ -195,14 +195,6 @@ class OrgaoController {
 
     async syncModel(req, res) {
         try {
-            await TipoOrgao.sync({ alter: true });
-            await TipoOrgao.findOrCreate({
-                where: { orgao_tipo_id: 1 },
-                defaults: {
-                    orgao_tipo_nome: 'Sem tipo definido',
-                    orgao_tipo_descricao: 'Órgão sem um tipo definido'
-                }
-            });
 
             await Orgao.sync({ alter: true });
             await Orgao.findOrCreate({
@@ -217,10 +209,10 @@ class OrgaoController {
                 }
             });
 
-            return res.status(200).json({ status: 200, message: 'Modelo sincronizado com sucesso' });
+            return { status: 200, message: 'Modelo sincronizado com sucesso' };
         } catch (error) {
             addLog('error_orgao', error.message);
-            return res.status(500).json({ status: 500, message: 'Erro interno do servidor' });
+            return { status: 500, message: 'Erro interno do servidor' };
         }
     }
 

@@ -20,6 +20,15 @@ router.use('/api', auth, orgaoRoutes);
 const pessoaRoutes = require('./pessoa.route');
 router.use('/api', auth, pessoaRoutes);
 
+const TipoPessoaRoutes = require('./tipo_pessoa.route');
+router.use('/api', auth, TipoPessoaRoutes);
+
+const TipoOrgaoRoutes = require('./tipo_orgao.route');
+router.use('/api', auth, TipoOrgaoRoutes);
+
+const SyncRoutes = require('./sync.route');
+router.use('/api', auth, SyncRoutes);
+
 router.use((req, res) => {
     addLog('error_missing_route', `Endpoint não encontrado: ${req.method} - ${req.originalUrl}`);
     res.status(404).json({ status: 404, message: 'Endpoint não encontrado. Consulte a documentação em /api-docs' });
