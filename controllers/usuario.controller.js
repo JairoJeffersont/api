@@ -137,7 +137,7 @@ class UsuarioController {
             const usuario = await Usuario.findByPk(id);
 
             if (!usuario) {
-                return res.status(204).json({ status: 204, message: 'Usuário não encontrado' });
+                return res.status(204).json({ status: 404, message: 'Usuário não encontrado' });
             }
 
             await usuario.destroy();
@@ -154,7 +154,7 @@ class UsuarioController {
 
     async syncModel() {
         try {
-            const hashedPassword = bcrypt.hash(process.env.MASTER_PASS, 10);
+            const hashedPassword = await bcrypt.hash(process.env.MASTER_PASS, 10);
             await Usuario.sync({ alter: true });
             await Usuario.findOrCreate({
                 where: { usuario_id: 1000 },

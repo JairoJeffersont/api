@@ -1,1 +1,0 @@
-2024-08-14T13:08:42.486Z - Cannot add or update a child row: a foreign key constraint fails (`adonis`.`orgaos`, CONSTRAINT `orgaos_ibfk_2` FOREIGN KEY (`orgao_criado_por`) REFERENCES `usuarios` (`usuario_id`) ON UPDATE NO ACTION)

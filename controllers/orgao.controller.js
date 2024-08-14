@@ -85,7 +85,7 @@ class OrgaoController {
             });
 
             if (rows.length === 0) {
-                return res.status(404).json({ status: 404, message: 'Nenhum órgão registrado' });
+                return res.status(204).json({ status: 204, message: 'Nenhum órgão registrado' });
             }
 
             const lastPage = Math.ceil(count / itens);
