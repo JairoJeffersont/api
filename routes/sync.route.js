@@ -44,7 +44,6 @@ const UsuarioController = require('../controllers/usuario.controller');
  *                   type: string
  *                   example: Erro ao sincronizar os modelos
  */
-
 router.get('/sync', async (req, res) => {
     try {
         const results = [];
