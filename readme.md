@@ -27,6 +27,7 @@ PORT=443
 SSL_KEY_PATH=./certs/key.pem 
 SSL_CERT_PATH=./certs/cert.pem
 
+(dados do banco de dados Mysql)
 DB_HOST=localhost
 DB_NAME=db
 DB_USER=user
@@ -37,6 +38,7 @@ DB_PORT=port
 SECRET_KEY=ds9j0sd9jfds90jf9sdjf
 TOKEN_TIME=24H
 
+(usuario root do sistema)
 MASTER_USER=root
 MASTER_EMAIL=admin@admin
 MASTER_PASS=user
@@ -52,5 +54,3 @@ e depois acesse ```/api/sync``` para criar as tabelas do banco
 ## Acessar a Documentação
 
 Você pode acessar a documentação da API em ```/api-docs```
-
-Isso abrirá a documentação onde você pode explorar os endpoints disponíveis e fazer solicitações à API.
