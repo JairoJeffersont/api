@@ -72,5 +72,4 @@ As dependências necessárias para a aplicação são as seguintes:
     "mysql2": "^3.10.3",
     "sequelize": "^6.37.3"
 }
-
 ```
