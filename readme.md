@@ -51,10 +51,6 @@ e depois acesse ```/api/sync``` para criar as tabelas do banco
 
 ## Acessar a Documentação
 
-Você pode acessar a documentação da API navegando para:
-
-```
-/api-docs
-```
+Você pode acessar a documentação da API em ```/api-docs```
 
 Isso abrirá a documentação onde você pode explorar os endpoints disponíveis e fazer solicitações à API.
