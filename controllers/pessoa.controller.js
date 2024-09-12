@@ -1,6 +1,7 @@
 const { Pessoa, TipoPessoa, Usuario, Orgao } = require('../models/pessoa.model');
 const addLog = require('../middleware/logger');
 const { Op } = require('sequelize');
+require('dotenv').config();
 
 
 class PessoaController {
@@ -61,10 +62,15 @@ class PessoaController {
 
     async list(req, res) {
         try {
-            const { pagina = 1, itens = 10, ordem = 'ASC', ordernarPor = 'pessoa_nome' } = req.query;
+            const { pagina = 1, itens = 10, ordem = 'ASC', ordernarPor = 'pessoa_nome', filtro = 'true' } = req.query;
             const offset = (pagina - 1) * itens;
 
+            const aplicarFiltro = filtro.toLowerCase() === 'true';
+
+            const whereCondition = aplicarFiltro ? { pessoa_estado: process.env.ESTADO_DEPUTADO } : {};
+
             const { count, rows } = await Pessoa.findAndCountAll({
+                where: whereCondition,
                 order: [[ordernarPor, ordem]],
                 limit: Number(itens),
                 offset: Number(offset),
@@ -94,9 +100,9 @@ class PessoaController {
             const lastPage = Math.ceil(count / itens);
 
             const links = {
-                first: `${req.protocol}://${req.hostname}/api/pessoas?itens=${itens}&pagina=1&ordem=${ordem}&ordernarPor=${ordernarPor}`,
-                self: `${req.protocol}://${req.hostname}/api/pessoas?itens=${itens}&pagina=${pagina}&ordem=${ordem}&ordernarPor=${ordernarPor}`,
-                last: `${req.protocol}://${req.hostname}/api/pessoas?itens=${itens}&pagina=${lastPage}&ordem=${ordem}&ordernarPor=${ordernarPor}`
+                first: `${req.protocol}://${req.hostname}/api/pessoas?itens=${itens}&pagina=1&ordem=${ordem}&ordernarPor=${ordernarPor}&filtro=${filtro}`,
+                self: `${req.protocol}://${req.hostname}/api/pessoas?itens=${itens}&pagina=${pagina}&ordem=${ordem}&ordernarPor=${ordernarPor}&filtro=${filtro}`,
+                last: `${req.protocol}://${req.hostname}/api/pessoas?itens=${itens}&pagina=${lastPage}&ordem=${ordem}&ordernarPor=${ordernarPor}&filtro=${filtro}`
             }
 
             return res.status(200).json({ status: 200, message: `${count} pessoa(s) encontrada(s)`, dados: rows, links });
@@ -105,6 +111,7 @@ class PessoaController {
             return res.status(500).json({ status: 500, message: 'Erro interno do servidor' });
         }
     }
+
 
     async find(req, res) {
         try {
@@ -152,7 +159,7 @@ class PessoaController {
 
             await pessoa.destroy();
             if (pessoa.pessoa_foto) {
-                const fotoPath = './public' +  pessoa.pessoa_foto;
+                const fotoPath = './public' + pessoa.pessoa_foto;
 
                 fs.unlink(fotoPath, (err) => {
                     if (err) {

@@ -58,11 +58,16 @@ class OrgaoController {
 
     async list(req, res) {
         try {
-            const { pagina = 1, itens = 10, ordem = 'ASC', ordernarPor = 'orgao_nome' } = req.query;
+            const { pagina = 1, itens = 10, ordem = 'ASC', ordernarPor = 'orgao_nome', filtro = 'false'} = req.query;
             const offset = (pagina - 1) * itens;
+
+            const aplicarFiltro = filtro.toLowerCase() === 'true';
+
+            const whereCondition = aplicarFiltro ? { orgao_estado: process.env.ESTADO_DEPUTADO } : {};
 
             const { count, rows } = await Orgao.findAndCountAll({
                 where: {
+                    ...whereCondition,
                     orgao_id: {
                         [Op.ne]: 1
                     }
@@ -91,9 +96,9 @@ class OrgaoController {
             const lastPage = Math.ceil(count / itens);
 
             const links = {
-                first: `${req.protocol}://${req.hostname}/api/orgaos?itens=${itens}&pagina=1&ordem=${ordem}&ordernarPor=${ordernarPor}`,
-                self: `${req.protocol}://${req.hostname}/api/orgaos?itens=${itens}&pagina=${pagina}&ordem=${ordem}&ordernarPor=${ordernarPor}`,
-                last: `${req.protocol}://${req.hostname}/api/orgaos?itens=${itens}&pagina=${lastPage}&ordem=${ordem}&ordernarPor=${ordernarPor}`
+                first: `${req.protocol}://${req.hostname}/api/orgaos?itens=${itens}&pagina=1&ordem=${ordem}&ordernarPor=${ordernarPor}&filtro=${filtro}`,
+                self: `${req.protocol}://${req.hostname}/api/orgaos?itens=${itens}&pagina=${pagina}&ordem=${ordem}&ordernarPor=${ordernarPor}&filtro=${filtro}`,
+                last: `${req.protocol}://${req.hostname}/api/orgaos?itens=${itens}&pagina=${lastPage}&ordem=${ordem}&ordernarPor=${ordernarPor}&filtro=${filtro}`,
             }
 
             return res.status(200).json({ status: 200, message: `${count} órgão(s) encontrado(s)`, dados: rows, links });
