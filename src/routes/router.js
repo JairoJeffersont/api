@@ -26,6 +26,9 @@ router.use('/api', auth, TipoPessoaRoutes);
 const TipoOrgaoRoutes = require('./tipo_orgao.route');
 router.use('/api', auth, TipoOrgaoRoutes);
 
+const ProposicoesRoute = require('./proposicoes.route');
+router.use('/api', auth, ProposicoesRoute);
+
 const SyncRoutes = require('./sync.route');
 router.use('/api', auth, SyncRoutes);
 
