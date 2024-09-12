@@ -1,10 +1,10 @@
 const express = require('express');
-const addLog = require('./middleware/logger');
+const addLog = require('./src/middleware/logger');
 const https = require('https');
 const fs = require('fs');
 const bodyParser = require('body-parser');
 const path = require('path');
-const router = require('./routes/router');
+const router = require('./src/routes/router');
 
 require('dotenv').config();
 
