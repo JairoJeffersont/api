@@ -52,10 +52,6 @@ npm start
 ```
 e depois acesse ```/api/sync``` para criar as tabelas do banco
 
-## Acessar a Documentação
-
-Você pode acessar a documentação da API em ```/api-docs```
-
 ## Dependências Utilizadas
 
 As dependências necessárias para a aplicação são as seguintes:
