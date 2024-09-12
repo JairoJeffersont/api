@@ -8,6 +8,5 @@ router.post('/tipos-pessoas/', TipoPessoaController.create);
 
 router.delete('/tipos-pessoas/:id', TipoPessoaController.delete);
 
-
 router.get('/tipos-pessoas-sync', TipoPessoaController.syncModel);
 module.exports = router;

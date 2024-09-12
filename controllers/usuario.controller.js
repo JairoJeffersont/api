@@ -10,6 +10,7 @@ class UsuarioController {
 
     async create(req, res) {
         try {
+
             const { usuario_nome, usuario_email, usuario_senha, usuario_aniversario, usuario_telefone, usuario_nivel, usuario_ativo, usuario_foto } = req.body;
 
             if (!usuario_nome || !usuario_email || !usuario_senha || !usuario_aniversario || !usuario_telefone || !usuario_nivel || !usuario_ativo) {
