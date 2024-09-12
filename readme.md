@@ -24,8 +24,8 @@ Antes de executar a aplicação, é necessário configurar as variáveis de ambi
 ```
 PORT=443
 (caminho para o certificado digital)
-SSL_KEY_PATH=./certs/key.pem 
-SSL_CERT_PATH=./certs/cert.pem
+SSL_KEY_PATH=certs/key.pem 
+SSL_CERT_PATH=certs/cert.pem
 
 (dados do banco de dados Mysql)
 DB_HOST=localhost
