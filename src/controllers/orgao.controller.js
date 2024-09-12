@@ -209,13 +209,13 @@ class OrgaoController {
 
             await Orgao.sync({ alter: true });
             await Orgao.findOrCreate({
-                where: { orgao_id: 1 },
+                where: { orgao_id: 1000 },
                 defaults: {
                     orgao_nome: 'Sem órgão definido',
                     orgao_email: 'email@email',
                     orgao_municipio: 'bsb',
                     orgao_estado: 'df',
-                    orgao_tipo: 1,
+                    orgao_tipo: 1000,
                     orgao_criado_por: 1000
                 }
             });

@@ -18,4 +18,5 @@ router.get('/pessoas/:id', PessoaController.find);
 router.get('/pessoaBusca', PessoaController.search);
 
 router.delete('/pessoas/:id', PessoaController.delete);
+
 module.exports = router;

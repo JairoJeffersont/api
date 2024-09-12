@@ -1,5 +1,7 @@
 const { TipoPessoa } = require('../models/pessoa.model');
 const addLog = require('../middleware/logger');
+const fs = require('fs'); 
+const path = require('path'); 
 
 class TipoPessoaController {
 
@@ -69,16 +71,24 @@ class TipoPessoaController {
     async syncModel() {
         try {
             await TipoPessoa.sync({ alter: true });
-            await TipoPessoa.findOrCreate({
-                where: { tipo_pessoa_id: 1 },
-                defaults: {
-                    tipo_pessoa_nome: 'Sem tipo definido',
-                    tipo_pessoa_descricao: 'Sem um tipo de pessoa definido'
-                }
-            });
+    
+            const filePath = path.join(__dirname, '../json/tipos_pessoas.json'); 
+            const fileContent = fs.readFileSync(filePath, 'utf8');
+            const data = JSON.parse(fileContent);
+    
+            for (const item of data) {
+                await TipoPessoa.findOrCreate({
+                    where: { tipo_pessoa_id: item.tipo_pessoa_id },
+                    defaults: {
+                        tipo_pessoa_nome: item.tipo_pessoa_nome,
+                        tipo_pessoa_descricao: item.tipo_pessoa_descricao
+                    }
+                });
+            }
+    
             return { status: 200, message: 'Modelo sincronizado com sucesso' };
         } catch (error) {
-            addLog('error_pessoa', error.message);
+            addLog('error_orgao', error.message);
             return { status: 500, message: 'Erro interno do servidor' };
         }
     }

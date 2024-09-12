@@ -1,0 +1,10 @@
+[
+    { "tipo_pessoa_id": 1000, "tipo_pessoa_nome": "Sem tipo definido", "tipo_pessoa_descricao": "Sem tipo definido" },
+    { "tipo_pessoa_id": 1001, "tipo_pessoa_nome": "Autoridades políticas", "tipo_pessoa_descricao": "Prefeitos, vereadores, deputados..." },
+    { "tipo_pessoa_id": 1002, "tipo_pessoa_nome": "Familiares", "tipo_pessoa_descricao": "Familiares do deputado" },
+    { "tipo_pessoa_id": 1003, "tipo_pessoa_nome": "Empresários", "tipo_pessoa_descricao": "Donos de empresa" },
+    { "tipo_pessoa_id": 1004, "tipo_pessoa_nome": "Eleitores", "tipo_pessoa_descricao": "Eleitores em geral" },
+    { "tipo_pessoa_id": 1005, "tipo_pessoa_nome": "Imprensa", "tipo_pessoa_descricao": "Jornalistas, diretores de jornais, assessoria" },
+    { "tipo_pessoa_id": 1006, "tipo_pessoa_nome": "Site", "tipo_pessoa_descricao": "Pessoas registradas no site" },
+    { "tipo_pessoa_id": 1007, "tipo_pessoa_nome": "Amigos", "tipo_pessoa_descricao": "Amigos pessoais do deputado" }
+]

@@ -9,4 +9,5 @@ router.post('/tipos-orgaos/', TipoOrgaoController.create);
 router.delete('/tipos-orgaos/:id', TipoOrgaoController.delete);
 
 router.get('/tipos-orgaos-sync', TipoOrgaoController.syncModel);
+
 module.exports = router;

@@ -5,7 +5,7 @@ const auth = require('../middleware/auth');
 
 
 router.get(['/', '/api'], (req, res) => {
-    res.status(200).json({ status: 200, message: 'API em funcionamento. Consulte a documentação em /api-docs' });
+    res.status(200).json({ status: 200, message: 'API em funcionamento.' });
 });
 
 const loginRoutes = require('./login.route');
