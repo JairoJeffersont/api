@@ -150,7 +150,7 @@ class UsuarioController {
             await usuario.destroy();
 
             if (usuario.usuario_foto) {
-                const fotoPath = './public' + usuario.usuario_foto; 
+                const fotoPath = './public' + usuario.usuario_foto;
 
                 fs.unlink(fotoPath, (err) => {
                     if (err) {
