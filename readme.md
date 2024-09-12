@@ -62,14 +62,14 @@ As dependências necessárias para a aplicação são as seguintes:
 
 ```
  "axios": "^1.7.7",
-        "bcryptjs": "^2.4.3",
-        "body-parser": "^1.20.2",
-        "dotenv": "^16.4.5",
-        "express": "^4.19.2",
-        "fs": "^0.0.1-security",
-        "https": "^1.0.0",
-        "jsonwebtoken": "^9.0.2",
-        "mysql2": "^3.10.3",
-        "sequelize": "^6.37.3",
-        "validator": "^13.12.0"
+ "bcryptjs": "^2.4.3",
+ "body-parser": "^1.20.2",
+ "dotenv": "^16.4.5",
+ "express": "^4.19.2",
+ "fs": "^0.0.1-security",
+ "https": "^1.0.0",
+ "jsonwebtoken": "^9.0.2",
+ "mysql2": "^3.10.3",
+ "sequelize": "^6.37.3",
+ "validator": "^13.12.0"
 ```
