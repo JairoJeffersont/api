@@ -62,13 +62,21 @@ class PessoaController {
 
     async list(req, res) {
         try {
-            const { pagina = 1, itens = 10, ordem = 'ASC', ordernarPor = 'pessoa_nome', filtro = 'true' } = req.query;
+            const { pagina = 1, itens = 10, ordem = 'ASC', ordernarPor = 'pessoa_nome', filtro = 'false', busca = '' } = req.query;
             const offset = (pagina - 1) * itens;
-
+    
             const aplicarFiltro = filtro.toLowerCase() === 'true';
-
+            
+            // Condição base para o filtro
             const whereCondition = aplicarFiltro ? { pessoa_estado: process.env.ESTADO_DEPUTADO } : {};
-
+    
+            // Adicionando a condição de busca se 'busca' não estiver vazio
+            if (busca.trim() !== '') {
+                whereCondition.pessoa_nome = {
+                    [Op.like]: `%${busca}%` // Utilizando like para busca
+                };
+            }
+    
             const { count, rows } = await Pessoa.findAndCountAll({
                 where: whereCondition,
                 order: [[ordernarPor, ordem]],
@@ -92,25 +100,26 @@ class PessoaController {
                     }
                 ]
             });
-
+    
             if (rows.length === 0) {
                 return res.status(200).json({ status: 200, message: 'Nenhuma pessoa registrada' });
             }
-
+    
             const lastPage = Math.ceil(count / itens);
-
+    
             const links = {
-                first: `${req.protocol}://${req.hostname}/api/pessoas?itens=${itens}&pagina=1&ordem=${ordem}&ordernarPor=${ordernarPor}&filtro=${filtro}`,
-                self: `${req.protocol}://${req.hostname}/api/pessoas?itens=${itens}&pagina=${pagina}&ordem=${ordem}&ordernarPor=${ordernarPor}&filtro=${filtro}`,
-                last: `${req.protocol}://${req.hostname}/api/pessoas?itens=${itens}&pagina=${lastPage}&ordem=${ordem}&ordernarPor=${ordernarPor}&filtro=${filtro}`
+                first: `${req.protocol}://${req.hostname}/api/pessoas?itens=${itens}&pagina=1&ordem=${ordem}&ordernarPor=${ordernarPor}&filtro=${filtro}${busca ? `&busca=${busca}` : ''}`,
+                self: `${req.protocol}://${req.hostname}/api/pessoas?itens=${itens}&pagina=${pagina}&ordem=${ordem}&ordernarPor=${ordernarPor}&filtro=${filtro}${busca ? `&busca=${busca}` : ''}`,
+                last: `${req.protocol}://${req.hostname}/api/pessoas?itens=${itens}&pagina=${lastPage}&ordem=${ordem}&ordernarPor=${ordernarPor}&filtro=${filtro}${busca ? `&busca=${busca}` : ''}`,
             }
-
+    
             return res.status(200).json({ status: 200, message: `${count} pessoa(s) encontrada(s)`, dados: rows, links });
         } catch (error) {
             addLog('error_pessoa', error.message);
             return res.status(500).json({ status: 500, message: 'Erro interno do servidor' });
         }
     }
+    
 
 
     async find(req, res) {

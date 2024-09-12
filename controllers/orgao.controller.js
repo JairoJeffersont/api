@@ -58,12 +58,18 @@ class OrgaoController {
 
     async list(req, res) {
         try {
-            const { pagina = 1, itens = 10, ordem = 'ASC', ordernarPor = 'orgao_nome', filtro = 'false'} = req.query;
+            const { pagina = 1, itens = 10, ordem = 'ASC', ordernarPor = 'orgao_nome', filtro = 'false', busca = ''} = req.query;
             const offset = (pagina - 1) * itens;
 
             const aplicarFiltro = filtro.toLowerCase() === 'true';
 
             const whereCondition = aplicarFiltro ? { orgao_estado: process.env.ESTADO_DEPUTADO } : {};
+
+            if (busca.trim() !== '') {
+                whereCondition.orgao_nome = {
+                    [Op.like]: `%${busca}%`
+                };
+            }
 
             const { count, rows } = await Orgao.findAndCountAll({
                 where: {
@@ -96,9 +102,9 @@ class OrgaoController {
             const lastPage = Math.ceil(count / itens);
 
             const links = {
-                first: `${req.protocol}://${req.hostname}/api/orgaos?itens=${itens}&pagina=1&ordem=${ordem}&ordernarPor=${ordernarPor}&filtro=${filtro}`,
-                self: `${req.protocol}://${req.hostname}/api/orgaos?itens=${itens}&pagina=${pagina}&ordem=${ordem}&ordernarPor=${ordernarPor}&filtro=${filtro}`,
-                last: `${req.protocol}://${req.hostname}/api/orgaos?itens=${itens}&pagina=${lastPage}&ordem=${ordem}&ordernarPor=${ordernarPor}&filtro=${filtro}`,
+                first: `${req.protocol}://${req.hostname}/api/orgaos?itens=${itens}&pagina=1&ordem=${ordem}&ordernarPor=${ordernarPor}&filtro=${filtro}${busca ? `&busca=${busca}` : ''}`,
+                self: `${req.protocol}://${req.hostname}/api/orgaos?itens=${itens}&pagina=${pagina}&ordem=${ordem}&ordernarPor=${ordernarPor}&filtro=${filtro}${busca ? `&busca=${busca}` : ''}`,
+                last: `${req.protocol}://${req.hostname}/api/orgaos?itens=${itens}&pagina=${lastPage}&ordem=${ordem}&ordernarPor=${ordernarPor}&filtro=${filtro}${busca ? `&busca=${busca}` : ''}`,
             }
 
             return res.status(200).json({ status: 200, message: `${count} órgão(s) encontrado(s)`, dados: rows, links });
