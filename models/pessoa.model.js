@@ -81,6 +81,10 @@ Pessoa.init({
         type: DataTypes.TEXT,
         allowNull: true,
     },
+    pessoa_foto: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+    },
     pessoa_tipo: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -103,6 +107,10 @@ Pessoa.init({
         allowNull: false,
         defaultValue: DataTypes.NOW,
         onUpdate: DataTypes.NOW,
+    },
+    pessoa_foto: {
+        type: DataTypes.TEXT,
+        allowNull: true,
     },
 }, {
     sequelize,

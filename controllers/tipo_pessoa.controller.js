@@ -33,7 +33,7 @@ class TipoPessoaController {
             });
 
             if (rows.length === 0) {
-                return res.status(204).json({ status: 204, message: 'Nenhum tipo de pessoa registrado' });
+                return res.status(200).json({ status: 200, message: 'Nenhum tipo de pessoa registrado' });
             }
 
             return res.status(200).json({ status: 200, message: `${count} tipo(s) de pessoa encontrado`, dados: rows });

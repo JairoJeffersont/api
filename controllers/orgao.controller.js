@@ -85,7 +85,7 @@ class OrgaoController {
             });
 
             if (rows.length === 0) {
-                return res.status(204).json({ status: 204, message: 'Nenhum órgão registrado' });
+                return res.status(200).json({ status: 200, message: 'Nenhum órgão registrado' });
             }
 
             const lastPage = Math.ceil(count / itens);
@@ -182,7 +182,7 @@ class OrgaoController {
             });
     
             if (orgaos.length === 0) {
-                return res.status(204).json({ status: 204, message: 'Nenhum órgão encontrado' });
+                return res.status(200).json({ status: 200, message: 'Nenhum órgão encontrado' });
             }
     
             return res.status(200).json({ status: 200, message: `${orgaos.length} órgão(s) encontrado(s)`, dados: orgaos });

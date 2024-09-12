@@ -2,6 +2,7 @@ const { Pessoa, TipoPessoa, Usuario, Orgao } = require('../models/pessoa.model')
 const addLog = require('../middleware/logger');
 const { Op } = require('sequelize');
 
+
 class PessoaController {
 
     async create(req, res) {
@@ -10,6 +11,10 @@ class PessoaController {
 
             if (!pessoa.pessoa_nome || !pessoa.pessoa_email || !pessoa.pessoa_municipio || !pessoa.pessoa_estado || !pessoa.pessoa_estado || !pessoa.pessoa_tipo || !pessoa.pessoa_orgao) {
                 return res.status(400).json({ status: 400, message: 'Todos os campos obrigatórios devem ser preenchidos' });
+            }
+
+            if (!validator.isEmail(pessoa_email)) {
+                return res.status(400).json({ status: 400, message: 'E-mail inválido' });
             }
 
             pessoa.pessoa_criada_por = req.user.usuario_id;
@@ -83,7 +88,7 @@ class PessoaController {
             });
 
             if (rows.length === 0) {
-                return res.status(204).json({ status: 204, message: 'Nenhuma pessoa registrada' });
+                return res.status(200).json({ status: 200, message: 'Nenhuma pessoa registrada' });
             }
 
             const lastPage = Math.ceil(count / itens);
@@ -146,6 +151,15 @@ class PessoaController {
             }
 
             await pessoa.destroy();
+            if (pessoa.pessoa_foto) {
+                const fotoPath = './public' +  pessoa.pessoa_foto;
+
+                fs.unlink(fotoPath, (err) => {
+                    if (err) {
+                        console.error('Erro ao remover o arquivo da foto:', err);
+                    }
+                });
+            }
 
             return res.status(200).json({ status: 200, message: 'Pessoa apagada com sucesso' });
         } catch (error) {
@@ -158,12 +172,14 @@ class PessoaController {
         }
     }
 
+
+
     async search(req, res) {
         try {
             const { pagina = 1, itens = 10, ordem = 'ASC', ordernarPor = 'pessoa_nome' } = req.query;
             const offset = (pagina - 1) * itens;
-            const nomeBusca = `%${req.query.nome}%`; 
-    
+            const nomeBusca = `%${req.query.nome}%`;
+
             const totalCount = await Pessoa.count({
                 where: {
                     pessoa_nome: {
@@ -171,7 +187,7 @@ class PessoaController {
                     }
                 }
             });
-    
+
             const rows = await Pessoa.findAll({
                 where: {
                     pessoa_nome: {
@@ -199,19 +215,19 @@ class PessoaController {
                     }
                 ]
             });
-    
+
             if (rows.length === 0) {
-                return res.status(204).json({ status: 204, message: 'Nenhuma pessoa registrada' });
+                return res.status(200).json({ status: 200, message: 'Nenhuma pessoa registrada' });
             }
-    
+
             const lastPage = Math.ceil(totalCount / itens);
-    
+
             const links = {
                 first: `${req.protocol}://${req.hostname}/api/pessoas?itens=${itens}&pagina=1&ordem=${ordem}&ordernarPor=${ordernarPor}`,
                 self: `${req.protocol}://${req.hostname}/api/pessoas?itens=${itens}&pagina=${pagina}&ordem=${ordem}&ordernarPor=${ordernarPor}`,
                 last: `${req.protocol}://${req.hostname}/api/pessoas?itens=${itens}&pagina=${lastPage}&ordem=${ordem}&ordernarPor=${ordernarPor}`
             }
-    
+
             return res.status(200).json({ status: 200, message: `${rows.length} pessoa(s) encontrada(s)`, dados: rows, links });
         } catch (error) {
             addLog('error_pessoa', error.message);
@@ -221,7 +237,7 @@ class PessoaController {
 
     async syncModel() {
         try {
-           
+
             await Pessoa.sync({ alter: true });
 
             return { status: 200, message: 'Modelo sincronizado com sucesso' };

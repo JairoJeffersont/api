@@ -1,17 +1,23 @@
 const Usuario = require('../models/usuario.model');
 const addLog = require('../middleware/logger');
 const bcrypt = require('bcryptjs');
-require('dotenv').config();
 const { Op } = require('sequelize');
+const validator = require('validator');
+const fs = require('fs');
+require('dotenv').config();
 
 class UsuarioController {
 
     async create(req, res) {
         try {
-            const { usuario_nome, usuario_email, usuario_senha, usuario_aniversario, usuario_telefone, usuario_nivel, usuario_ativo } = req.body;
+            const { usuario_nome, usuario_email, usuario_senha, usuario_aniversario, usuario_telefone, usuario_nivel, usuario_ativo, usuario_foto } = req.body;
 
             if (!usuario_nome || !usuario_email || !usuario_senha || !usuario_aniversario || !usuario_telefone || !usuario_nivel || !usuario_ativo) {
                 return res.status(400).json({ status: 400, message: 'Todos os campos são obrigatórios' });
+            }
+
+            if (!validator.isEmail(usuario_email)) {
+                return res.status(400).json({ status: 400, message: 'E-mail inválido' });
             }
 
             const hashedPassword = await bcrypt.hash(usuario_senha, 10);
@@ -23,14 +29,15 @@ class UsuarioController {
                 usuario_aniversario,
                 usuario_telefone,
                 usuario_nivel,
-                usuario_ativo
+                usuario_ativo,
+                usuario_foto
             });
 
-            return res.status(201).json({ status: 201, message: 'Usuário criado com sucesso.' });
+            return res.status(200).json({ status: 200, message: 'Usuário criado com sucesso.' });
 
         } catch (err) {
             if (err.original && err.original.errno === 1062) {
-                return res.status(409).json({ status: 409, message: 'Esse usuário já está cadastrado' });
+                return res.status(409).json({ status: 409, message: 'Esse usuário já está cadastrado.' });
             }
 
             addLog('error_user', err.message);
@@ -74,7 +81,7 @@ class UsuarioController {
             });
 
             if (!usuario) {
-                return res.status(204).json({ status: 204, message: 'Usuário não encontrado' });
+                return res.status(200).json({ status: 200, message: 'Usuário não encontrado' });
             }
 
             return res.status(200).json({ status: 200, message: 'Usuário encontrado', dados: usuario });
@@ -86,7 +93,7 @@ class UsuarioController {
     }
 
     async list(req, res) {
-        
+
         try {
             const { pagina = 1, itens = 10, ordem = 'ASC', ordernarPor = 'usuario_nome' } = req.query;
             const offset = (pagina - 1) * itens;
@@ -108,7 +115,7 @@ class UsuarioController {
             });
 
             if (rows.length === 0) {
-                return res.status(204).json({ status: 204, message: 'Nenhum usuário registrado' });
+                return res.status(200).json({ status: 200, message: 'Nenhum usuário registrado' });
             }
 
             const lastPage = Math.ceil(count / itens);
@@ -137,10 +144,20 @@ class UsuarioController {
             const usuario = await Usuario.findByPk(id);
 
             if (!usuario) {
-                return res.status(204).json({ status: 404, message: 'Usuário não encontrado' });
+                return res.status(404).json({ status: 404, message: 'Usuário não encontrado' });
             }
 
             await usuario.destroy();
+
+            if (usuario.usuario_foto) {
+                const fotoPath = './public' + usuario.usuario_foto; 
+
+                fs.unlink(fotoPath, (err) => {
+                    if (err) {
+                        console.error('Erro ao remover o arquivo da foto:', err);
+                    }
+                });
+            }
 
             return res.status(200).json({ status: 200, message: 'Usuário apagado com sucesso' });
         } catch (error) {
@@ -174,7 +191,7 @@ class UsuarioController {
             return { status: 500, message: 'Erro interno do servidor' };
         }
     }
-    
+
 }
 
 module.exports = new UsuarioController();

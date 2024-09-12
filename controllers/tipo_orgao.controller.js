@@ -32,7 +32,7 @@ class TipoOrgaoController {
             });
 
             if (rows.length === 0) {
-                return res.status(204).json({ status: 204, message: 'Nenhum tipo de órgão registrado' });
+                return res.status(200).json({ status: 200, message: 'Nenhum tipo de órgão registrado' });
             }
 
             return res.status(200).json({ status: 200, message: `${count} tipo(s) de órgão encontrado`, dados: rows });

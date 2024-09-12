@@ -9,41 +9,6 @@ const OrgaoController = require('../controllers/orgao.controller');
 const PessoaController = require('../controllers/pessoa.controller');
 const UsuarioController = require('../controllers/usuario.controller');
 
-/**
- * @swagger
- * /api/sync:
- *   get:
- *     summary: Sincroniza todas as tabelas do banco de dados.
- *     tags:
- *       - Sincronização
- *     responses:
- *       200:
- *         description: Tabelas sincronizadas com sucesso.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: integer
- *                   example: 200
- *                 message:
- *                   type: string
- *                   example: Tabelas sincronizadas com sucesso
- *       500:
- *         description: Erro ao sincronizar os modelos.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: integer
- *                   example: 500
- *                 message:
- *                   type: string
- *                   example: Erro ao sincronizar os modelos
- */
 router.get('/sync', async (req, res) => {
     try {
         const results = [];
