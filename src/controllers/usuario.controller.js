@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const { Op } = require('sequelize');
 const validator = require('validator');
 const fs = require('fs');
+const path = require('path');
 require('dotenv').config();
 
 class UsuarioController {
@@ -152,10 +153,10 @@ class UsuarioController {
 
             if (usuario.usuario_foto) {
                 const fotoPath = './public' + usuario.usuario_foto;
-
                 fs.unlink(fotoPath, (err) => {
                     if (err) {
-                        console.error('Erro ao remover o arquivo da foto:', err);
+                        addLog('error_user', err.message);
+                        return res.status(500).json({ status: 500, message: 'Erro interno do servidor' });
                     }
                 });
             }

@@ -168,7 +168,7 @@ class PessoaController {
 
             await pessoa.destroy();
             if (pessoa.pessoa_foto) {
-                const fotoPath = './public' + pessoa.pessoa_foto;
+                const fotoPath = './public'+pessoa.pessoa_foto;
 
                 fs.unlink(fotoPath, (err) => {
                     if (err) {

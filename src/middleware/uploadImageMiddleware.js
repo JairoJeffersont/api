@@ -1,15 +1,18 @@
 const fs = require('fs');
 const path = require('path');
 
+const addLog = require('../middleware/logger');
+
 const uploadImageMiddleware = (req, res, next) => {
     if (req.body.usuario_foto) {
         const base64Data = req.body.usuario_foto.replace(/^data:image\/\w+;base64,/, "");
         const fileName = `foto_${Date.now()}.png`;
-        const filePath = path.join(__dirname, '../public/arquivos/', fileName);
+        const filePath = path.join(__dirname, '../../public/arquivos/', fileName);
 
         fs.writeFile(filePath, base64Data, 'base64', (err) => {
             if (err) {
-                return res.status(500).json({ status: 500, message: 'Erro ao salvar o arquivo.' });
+                addLog('error_user', err.message);
+                return res.status(500).json({ status: 500, message: 'Erro interno do servidor' });
             }
             req.body.usuario_foto = `/arquivos/${fileName}`;
             next();
