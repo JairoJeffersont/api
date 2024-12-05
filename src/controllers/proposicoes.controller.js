@@ -14,6 +14,7 @@ class ProposicoesController {
         const ordenarPor = req.query.ordenarPor || 'id';
         const ano = req.query.ano || 2024;
         let response = '';
+        
 
         try {
 
@@ -59,6 +60,7 @@ class ProposicoesController {
 
             }));
 
+            
             const totalItens = response.headers['x-total-count'];
             const ultimaPagina = Math.ceil(totalItens / itens);
 
@@ -75,6 +77,7 @@ class ProposicoesController {
             return res.status(500).json({ status: 500, message: 'Erro interno do servidor' });
         }
     }
+    
 
     async BuscarPrincipal(req, res) {
         try {
