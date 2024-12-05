@@ -254,7 +254,7 @@ class ProposicoesController {
                     // Garantir que autores seja sempre um array
                     const autores = Array.isArray(emenda.AutoriaEmenda?.Autor) ? emenda.AutoriaEmenda.Autor : [];
 
-                    const ementa_deputado = autores.some(autor => autor.NomeAutor.toLowerCase() === 'acácio favacho'.toLowerCase());
+                    const ementa_deputado = autores.some(autor => autor.NomeAutor.toLowerCase() === process.env.NOME_PARLAMENTAR.toLowerCase());
 
                     return {
                         codigo: emenda.CodigoEmenda,
