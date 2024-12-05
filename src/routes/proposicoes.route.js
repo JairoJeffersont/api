@@ -12,4 +12,5 @@ router.get('/proposicao-apensados', ProposicaoController.BuscarApensadosDoGabine
 
 
 
+
 module.exports = router;

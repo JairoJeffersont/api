@@ -2,9 +2,6 @@ const addLog = require('../middleware/logger');
 const axios = require('axios');
 require('dotenv').config();
 
-require('dotenv').config();
-
-
 class ProposicoesController {
 
     async ProposicoesDeputado(req, res) {
