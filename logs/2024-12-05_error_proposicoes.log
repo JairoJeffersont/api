@@ -1,0 +1,9 @@
+2024-12-05T18:14:44.185Z - response is not defined
+2024-12-05T18:15:06.998Z - Assignment to constant variable.
+2024-12-05T18:15:43.089Z - Assignment to constant variable.
+2024-12-05T18:18:00.946Z - Cannot read properties of undefined (reading 'Materias')
+2024-12-05T18:18:04.716Z - Cannot read properties of undefined (reading 'Materias')
+2024-12-05T18:20:30.801Z - response.data.PesquisaBasicaMateria.map is not a function
+2024-12-05T18:20:44.820Z - Cannot read properties of undefined (reading 'map')
+2024-12-05T18:22:32.431Z - response.data.PesquisaBasicaMateria.map is not a function
+2024-12-05T18:22:37.217Z - response.data.PesquisaBasicaMateria.map is not a function

@@ -1,3 +1,4 @@
+const { response } = require('express');
 const addLog = require('../middleware/logger');
 const axios = require('axios');
 require('dotenv').config();
@@ -14,7 +15,6 @@ class ProposicoesController {
         const ordenarPor = req.query.ordenarPor || 'id';
         const ano = req.query.ano || 2024;
         let response = '';
-        
 
         try {
 
@@ -60,7 +60,7 @@ class ProposicoesController {
 
             }));
 
-            
+
             const totalItens = response.headers['x-total-count'];
             const ultimaPagina = Math.ceil(totalItens / itens);
 
@@ -77,7 +77,6 @@ class ProposicoesController {
             return res.status(500).json({ status: 500, message: 'Erro interno do servidor' });
         }
     }
-    
 
     async BuscarPrincipal(req, res) {
         try {
@@ -192,20 +191,20 @@ class ProposicoesController {
     async BuscarAutores(req, res) {
         const id = Number(req.query.id);
         let response = '';
-    
+
         try {
             response = await axios.get(`${process.env.URL_API_CAMARA}/proposicoes/${id}/autores`);
-    
+
             if (response.data.dados.length === 0) {
                 return res.status(200).json({ status: 200, message: 'Nenhum autor encontrado.' });
             }
-    
+
             const autores = await Promise.all(
                 response.data.dados.map(async (autor) => {
                     let siglaPartido = null;
                     let uriPartido = null;
                     let siglaUf = null;
-    
+
                     if (autor.codTipo === 10000) {
                         const deputadoResponse = await axios.get(`${process.env.URL_API_CAMARA}/deputados?nome=${autor.nome}`);
                         if (deputadoResponse.data.dados.length > 0) {
@@ -215,7 +214,7 @@ class ProposicoesController {
                             siglaUf = deputadoDados.siglaUf;
                         }
                     }
-    
+
                     return {
                         nome: autor.nome,
                         proponente: autor.proponente,
@@ -226,15 +225,39 @@ class ProposicoesController {
                     };
                 })
             );
-    
+
             return res.status(200).json({ status: 200, message: 'Autores encontrados', dados: autores });
         } catch (error) {
             addLog('error_proposicoes', error.message);
             return res.status(500).json({ status: 500, message: 'Erro interno do servidor' });
         }
     }
-    
-    
+
+    async BuscarMP(req, res) {
+        try {
+            const ano = req.query.ano || 2024;
+            let response = await axios.get(`${process.env.URL_API_SENADO}/materia/pesquisa/lista?sigla=mpv&ano=${ano}`);
+
+            const materias = response.data.PesquisaBasicaMateria.Materias.Materia;
+
+
+            const mappedData = materias.map(item => {
+                return {
+                    id: item.Codigo,
+                    titulo: item.DescricaoIdentificacao,
+                    ementa: item.Ementa
+                };
+            });
+
+            console.log(mappedData);
+            return res.status(200).json(mappedData);
+
+        } catch (error) {
+            addLog('error_proposicoes', error.message);
+            return res.status(500).json({ status: 500, message: 'Erro interno do servidor' });
+        }
+    }
+
 
 
 

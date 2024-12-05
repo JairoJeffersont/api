@@ -11,6 +11,8 @@ router.get('/proposicao-apensados', ProposicaoController.BuscarApensadosDoGabine
 
 router.get('/proposicao-autores', ProposicaoController.BuscarAutores);
 
+router.get('/medidas-provisorias', ProposicaoController.BuscarMP);
+
 
 
 
