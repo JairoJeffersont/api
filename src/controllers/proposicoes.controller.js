@@ -235,23 +235,19 @@ class ProposicoesController {
 
     async BuscarMP(req, res) {
         try {
-            // Parâmetros de paginação
             const ano = req.query.ano || 2024;
-            const itens = parseInt(req.query.itens) || 10;  // Número de itens por página (default 10)
-            const pagina = parseInt(req.query.pagina) || 1;  // Página atual (default 1)
+            const itens = parseInt(req.query.itens) || 10; 
+            const pagina = parseInt(req.query.pagina) || 1; 
 
-            // Solicitação à API para buscar as matérias
             let response = await axios.get(`${process.env.URL_API_SENADO}/materia/pesquisa/lista?sigla=mpv&ano=${ano}`);
             const materias = response.data.PesquisaBasicaMateria.Materias.Materia;
 
-            // Mapeamento das matérias
             const mappedData = await Promise.all(materias.map(async item => {
                 const emendaResponse = await axios.get(`https://legis.senado.leg.br/dadosabertos/materia/emendas/${item.Codigo}`);
 
-                const emendas = emendaResponse?.data?.EmendaMateria?.Materia?.Emendas?.Emenda || [];  // Garante que emendas seja um array
+                const emendas = emendaResponse?.data?.EmendaMateria?.Materia?.Emendas?.Emenda || []; 
 
                 const mappedEmendas = emendas.map(emenda => {
-                    // Garantir que autores seja sempre um array
                     const autores = Array.isArray(emenda.AutoriaEmenda?.Autor) ? emenda.AutoriaEmenda.Autor : [];
 
                     const ementa_deputado = autores.some(autor => autor.NomeAutor.toLowerCase() === process.env.NOME_PARLAMENTAR.toLowerCase());
