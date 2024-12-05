@@ -235,22 +235,27 @@ class ProposicoesController {
 
     async BuscarMP(req, res) {
         try {
+            // Parâmetros de paginação
             const ano = req.query.ano || 2024;
-            let response = await axios.get(`${process.env.URL_API_SENADO}/materia/pesquisa/lista?sigla=mpv&ano=${ano}`);
+            const itens = parseInt(req.query.itens) || 10;  // Número de itens por página (default 10)
+            const pagina = parseInt(req.query.pagina) || 1;  // Página atual (default 1)
 
+            // Solicitação à API para buscar as matérias
+            let response = await axios.get(`${process.env.URL_API_SENADO}/materia/pesquisa/lista?sigla=mpv&ano=${ano}`);
             const materias = response.data.PesquisaBasicaMateria.Materias.Materia;
 
+            // Mapeamento das matérias
             const mappedData = await Promise.all(materias.map(async item => {
                 const emendaResponse = await axios.get(`https://legis.senado.leg.br/dadosabertos/materia/emendas/${item.Codigo}`);
-            
-                const emendas = emendaResponse?.data?.EmendaMateria?.Materia?.Emendas?.Emenda || []; // Garante que emendas seja um array
-            
+
+                const emendas = emendaResponse?.data?.EmendaMateria?.Materia?.Emendas?.Emenda || [];  // Garante que emendas seja um array
+
                 const mappedEmendas = emendas.map(emenda => {
                     // Garantir que autores seja sempre um array
-                    const autores = Array.isArray(emenda.AutoriaEmenda?.Autor) ? emenda.AutoriaEmenda.Autor : []; 
-            
+                    const autores = Array.isArray(emenda.AutoriaEmenda?.Autor) ? emenda.AutoriaEmenda.Autor : [];
+
                     const ementa_deputado = autores.some(autor => autor.NomeAutor.toLowerCase() === 'acácio favacho'.toLowerCase());
-            
+
                     return {
                         codigo: emenda.CodigoEmenda,
                         numero: emenda.NumeroEmenda,
@@ -266,30 +271,56 @@ class ProposicoesController {
                             descricao: texto.DescricaoTexto,
                             url: texto.UrlTexto
                         })) || [],
-                        ementa_deputado // Adicionando a chave ementa_deputado
+                        ementa_deputado
                     };
                 });
-            
+
                 return {
                     id: item.Codigo,
                     titulo: item.DescricaoIdentificacao,
                     ementa: item.Ementa,
-                    ementa_deputado: mappedEmendas.some(emenda => emenda.ementa_deputado), // Verifica se algum autor é Acácio Favacho
+                    emenda_do_deputado: mappedEmendas.some(emenda => emenda.ementa_deputado),
                     data: item.Data,
                     link: `https://www.congressonacional.leg.br/materias/medidas-provisorias/-/mpv/${item.Codigo}`,
                     emendas: mappedEmendas
                 };
             }));
-            
-            
 
-            return res.status(200).json({statu:200, message: 'OK', dados: mappedData});
+            mappedData.sort((a, b) => {
+                if (a.titulo > b.titulo) return -1;
+                if (a.titulo < b.titulo) return 1;
+                return 0;
+            });
+
+            const totalItens = mappedData.length;
+            const totalPaginas = Math.ceil(totalItens / itens);  // Calcular total de páginas
+
+            const paginaAtual = Math.min(Math.max(pagina, 1), totalPaginas);
+
+            const dataPaginada = mappedData.slice((paginaAtual - 1) * itens, paginaAtual * itens);
+
+            const ultimaPagina = totalPaginas;
+            const links = {
+                first: `${req.protocol}://${req.hostname}/api/medidas-provisorias?ano=${ano}&itens=${itens}&pagina=1`,
+                self: `${req.protocol}://${req.hostname}/api/medidas-provisorias?ano=${ano}&itens=${itens}&pagina=${paginaAtual}`,
+                last: `${req.protocol}://${req.hostname}/api/medidas-provisorias?ano=${ano}&itens=${itens}&pagina=${ultimaPagina}`
+            };
+
+            return res.status(200).json({
+                status: 200,
+                message: 'OK',
+                dados: dataPaginada,
+
+                links
+            });
 
         } catch (error) {
-            addLog('error_proposicoes', error.message);
+            console.error(error.message);
             return res.status(500).json({ status: 500, message: 'Erro interno do servidor' });
         }
     }
+
+
 
 
 
