@@ -44,7 +44,7 @@ Usuario.init({
         allowNull: true,
     },
     usuario_foto: {
-        type: DataTypes.TEXT,
+        type: DataTypes.TEXT('long'),
         allowNull: true,
     },
 }, {

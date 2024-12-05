@@ -4,7 +4,6 @@ const PessoaController = require('../controllers/pessoa.controller');
 const uploadImageMiddleware = require('../middleware/uploadImageMiddleware');
 
 
-
 router.get('/pessoas-sync', PessoaController.syncModel);
 
 router.post('/pessoas', uploadImageMiddleware, PessoaController.create);

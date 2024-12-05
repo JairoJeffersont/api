@@ -109,7 +109,7 @@ Pessoa.init({
         onUpdate: DataTypes.NOW,
     },
     pessoa_foto: {
-        type: DataTypes.TEXT,
+        type: DataTypes.TEXT('long'),
         allowNull: true,
     },
 }, {
