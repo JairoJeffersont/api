@@ -9,6 +9,8 @@ router.get('/proposicao-principal', ProposicaoController.BuscarPrincipal);
 
 router.get('/proposicao-apensados', ProposicaoController.BuscarApensadosDoGabinete);
 
+router.get('/proposicao-autores', ProposicaoController.BuscarAutores);
+
 
 
 

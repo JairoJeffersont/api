@@ -186,6 +186,54 @@ class ProposicoesController {
         }
     }
 
+    async BuscarAutores(req, res) {
+        const id = Number(req.query.id);
+        let response = '';
+    
+        try {
+            response = await axios.get(`${process.env.URL_API_CAMARA}/proposicoes/${id}/autores`);
+    
+            if (response.data.dados.length === 0) {
+                return res.status(200).json({ status: 200, message: 'Nenhum autor encontrado.' });
+            }
+    
+            const autores = await Promise.all(
+                response.data.dados.map(async (autor) => {
+                    let siglaPartido = null;
+                    let uriPartido = null;
+                    let siglaUf = null;
+    
+                    if (autor.codTipo === 10000) {
+                        const deputadoResponse = await axios.get(`${process.env.URL_API_CAMARA}/deputados?nome=${autor.nome}`);
+                        if (deputadoResponse.data.dados.length > 0) {
+                            const deputadoDados = deputadoResponse.data.dados[0];
+                            siglaPartido = deputadoDados.siglaPartido;
+                            uriPartido = deputadoDados.uriPartido;
+                            siglaUf = deputadoDados.siglaUf;
+                        }
+                    }
+    
+                    return {
+                        nome: autor.nome,
+                        proponente: autor.proponente,
+                        ordem_assinatura: autor.ordemAssinatura,
+                        siglaPartido,
+                        uriPartido,
+                        siglaUf,
+                    };
+                })
+            );
+    
+            return res.status(200).json({ status: 200, message: 'Autores encontrados', dados: autores });
+        } catch (error) {
+            addLog('error_proposicoes', error.message);
+            return res.status(500).json({ status: 500, message: 'Erro interno do servidor' });
+        }
+    }
+    
+    
+
+
 
 
 }
