@@ -240,17 +240,50 @@ class ProposicoesController {
 
             const materias = response.data.PesquisaBasicaMateria.Materias.Materia;
 
-
-            const mappedData = materias.map(item => {
+            const mappedData = await Promise.all(materias.map(async item => {
+                const emendaResponse = await axios.get(`https://legis.senado.leg.br/dadosabertos/materia/emendas/${item.Codigo}`);
+            
+                const emendas = emendaResponse?.data?.EmendaMateria?.Materia?.Emendas?.Emenda || []; // Garante que emendas seja um array
+            
+                const mappedEmendas = emendas.map(emenda => {
+                    // Garantir que autores seja sempre um array
+                    const autores = Array.isArray(emenda.AutoriaEmenda?.Autor) ? emenda.AutoriaEmenda.Autor : []; 
+            
+                    const ementa_deputado = autores.some(autor => autor.NomeAutor.toLowerCase() === 'acácio favacho'.toLowerCase());
+            
+                    return {
+                        codigo: emenda.CodigoEmenda,
+                        numero: emenda.NumeroEmenda,
+                        descricaoTurno: emenda.DescricaoTurno,
+                        descricaoTipoEmenda: emenda.DescricaoTipoEmenda,
+                        dataApresentacao: emenda.DataApresentacao,
+                        autores: autores.map(autor => ({
+                            nome: autor.NomeAutor,
+                            partido: autor.IdentificacaoParlamentar?.SiglaPartidoParlamentar,
+                            uf: autor.IdentificacaoParlamentar?.UfParlamentar
+                        })),
+                        textosEmenda: emenda.TextosEmenda?.TextoEmenda?.map(texto => ({
+                            descricao: texto.DescricaoTexto,
+                            url: texto.UrlTexto
+                        })) || [],
+                        ementa_deputado // Adicionando a chave ementa_deputado
+                    };
+                });
+            
                 return {
                     id: item.Codigo,
                     titulo: item.DescricaoIdentificacao,
-                    ementa: item.Ementa
+                    ementa: item.Ementa,
+                    ementa_deputado: mappedEmendas.some(emenda => emenda.ementa_deputado), // Verifica se algum autor é Acácio Favacho
+                    data: item.Data,
+                    link: `https://www.congressonacional.leg.br/materias/medidas-provisorias/-/mpv/${item.Codigo}`,
+                    emendas: mappedEmendas
                 };
-            });
+            }));
+            
+            
 
-            console.log(mappedData);
-            return res.status(200).json(mappedData);
+            return res.status(200).json({statu:200, message: 'OK', dados: mappedData});
 
         } catch (error) {
             addLog('error_proposicoes', error.message);
