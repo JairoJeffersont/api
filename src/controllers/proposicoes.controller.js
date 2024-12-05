@@ -51,7 +51,7 @@ class ProposicoesController {
                     proposicao_detalhes: {
                         data_apresentacao: detalhes.data.dados.dataApresentacao,
                         arquivado: detalhes.data.dados.statusProposicao.codSituacao === 923,
-                        transformada_em_lei: detalhes.data.dados.statusProposicao.codSituacao === 1140,
+                        aprovada: detalhes.data.dados.statusProposicao.codSituacao === 1140,
                         documento: detalhes.data.dados.urlInteiroTeor
                     },
                     ...(autoriaUnica ? {} : { proposicao_autores: autores })
