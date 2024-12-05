@@ -5,10 +5,15 @@ const fs = require('fs');
 const bodyParser = require('body-parser');
 const path = require('path');
 const router = require('./src/routes/router');
+const cors = require('cors'); // Adiciona o CORS
+
 
 require('dotenv').config();
 
 const app = express();
+
+app.use(cors());
+
 
 app.use((req, res, next) => {
     bodyParser.json({ limit: '50mb' })(req, res, (err) => {

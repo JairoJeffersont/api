@@ -24,7 +24,7 @@ class ProposicoesController {
             }
 
             if (response.data.dados.length === 0) {
-                return res.status(200).json({ status: 200, message: 'Nenhuma proposição encontrada.' });
+                return res.status(200).json({ status: 204, message: 'Nenhuma proposição encontrada.' });
             }
 
             const proposicoes = await Promise.all(response.data.dados.map(async (proposicao) => {
